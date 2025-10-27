@@ -52,6 +52,8 @@ export class AEMEmbed extends HTMLElement {
           } else {
             // Wait for the event
             window.addEventListener('openai:set_globals', () => {
+              // eslint-disable-next-line no-console
+              console.log('OpenAI tool output', window.openai.toolOutput);
               resolve(window.openai.toolOutput);
             }, { once: true });
           }
