@@ -3,6 +3,6 @@ export default async function decorate(block, onDataLoaded) {
   onDataLoaded.then((data) => {
     // eslint-disable-next-line no-console
     console.log('Data loaded', data);
-    block.textContent = 'Hello World';
+    block.textContent = `key1: ${data.key1}\nkey2: ${data.key2}`;
   });
 }
