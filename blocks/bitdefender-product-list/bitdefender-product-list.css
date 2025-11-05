@@ -148,7 +148,7 @@
   display: block;
   width: 100%;
   background: #ed1c24;
-  color: #fff;
+  color: #fff !important;
   text-align: center;
   padding: 10px 16px;
   border-radius: 6px;
@@ -164,6 +164,11 @@
 
 .product-buy-button:hover {
   background: #d11920;
+  color: #fff !important;
+}
+
+.product-buy-button:visited {
+  color: #fff;
 }
 
 /* Guarantee */

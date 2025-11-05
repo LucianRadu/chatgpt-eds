@@ -82,11 +82,13 @@ function createProductCard(product, isRecommended = false) {
   pricingSection.appendChild(priceNote);
   card.appendChild(pricingSection);
 
-  // Buy button
+  // Start trial button
   const buyButton = document.createElement('a');
   buyButton.className = 'product-buy-button';
-  buyButton.href = '#';
-  buyButton.textContent = 'Buy Now';
+  buyButton.href = product.trialUrl || '#';
+  buyButton.textContent = 'Start Trial';
+  buyButton.target = '_blank';
+  buyButton.rel = 'noopener noreferrer';
   card.appendChild(buyButton);
 
   // Guarantee
