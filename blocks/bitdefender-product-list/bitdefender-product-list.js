@@ -87,6 +87,20 @@ function createProductCard(product, isRecommended = false) {
   buyButton.className = 'product-buy-button';
   buyButton.href = product.trialUrl || '#';
   buyButton.textContent = 'Start Trial';
+  
+  // Use window.openai.openExternal for sandbox-safe navigation
+  if (product.trialUrl) {
+    buyButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (window.openai?.openExternal) {
+        window.openai.openExternal({ href: product.trialUrl });
+      } else {
+        // Fallback for non-ChatGPT environments
+        window.open(product.trialUrl, '_blank');
+      }
+    });
+  }
+  
   card.appendChild(buyButton);
 
   // Guarantee
