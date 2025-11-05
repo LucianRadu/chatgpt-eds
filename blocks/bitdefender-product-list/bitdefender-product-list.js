@@ -125,22 +125,76 @@ function createProductCard(product, isRecommended = false) {
   return card;
 }
 
+function createCarouselArrows(container, block) {
+  const leftArrow = document.createElement('button');
+  leftArrow.className = 'carousel-arrow carousel-arrow-left';
+  leftArrow.setAttribute('aria-label', 'Previous products');
+  leftArrow.textContent = '<';
+
+  const rightArrow = document.createElement('button');
+  rightArrow.className = 'carousel-arrow carousel-arrow-right';
+  rightArrow.setAttribute('aria-label', 'Next products');
+  rightArrow.textContent = '>';
+
+  // Update arrow states based on scroll position
+  const updateArrows = () => {
+    const scrollLeft = container.scrollLeft;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    leftArrow.classList.toggle('disabled', scrollLeft <= 0);
+    rightArrow.classList.toggle('disabled', scrollLeft >= maxScroll - 1);
+  };
+
+  // Scroll functionality
+  const scrollAmount = 300; // pixels to scroll
+
+  leftArrow.addEventListener('click', () => {
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+
+  rightArrow.addEventListener('click', () => {
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  });
+
+  // Update arrows on scroll
+  container.addEventListener('scroll', updateArrows);
+
+  // Initial update
+  setTimeout(updateArrows, 100);
+
+  block.appendChild(leftArrow);
+  block.appendChild(rightArrow);
+}
+
 export default async function decorate(block, onDataLoaded) {
   block.textContent = '';
   block.className = 'bitdefender-product-list';
 
-  // Show only the Premium Security Individual product
-  const product = MOCK_PRODUCTS.find((p) => p.id === 'premium-security-individual');
+  // Show multiple products initially for testing/preview
+  const initialProductIds = [
+    'total-security-individual',
+    'premium-security-individual',
+    'ultimate-security-individual',
+    'total-security-family',
+    'premium-security-family',
+    'ultimate-security-family',
+  ];
 
-  if (product) {
-    const container = document.createElement('div');
-    container.className = 'products-container';
+  const container = document.createElement('div');
+  container.className = 'products-container';
 
-    const card = createProductCard(product);
-    container.appendChild(card);
+  initialProductIds.forEach((productId) => {
+    const product = MOCK_PRODUCTS.find((p) => p.id === productId);
+    if (product) {
+      const card = createProductCard(product);
+      container.appendChild(card);
+    }
+  });
 
-    block.appendChild(container);
-  }
+  block.appendChild(container);
+
+  // Add carousel arrows for initial content
+  createCarouselArrows(container, block);
 
   onDataLoaded.then((data) => {
     // Clear the existing content
@@ -167,5 +221,8 @@ export default async function decorate(block, onDataLoaded) {
     }
 
     block.appendChild(container);
+
+    // Add carousel arrows
+    createCarouselArrows(container, block);
   });
 }
