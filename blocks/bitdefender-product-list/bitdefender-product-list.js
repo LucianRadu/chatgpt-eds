@@ -87,7 +87,7 @@ function createProductCard(product, isRecommended = false) {
   buyButton.className = 'product-buy-button';
   buyButton.href = product.trialUrl || '#';
   buyButton.textContent = 'Start Trial';
-  buyButton.target = '_blank';
+  buyButton.target = '_top';
   buyButton.rel = 'noopener noreferrer';
   card.appendChild(buyButton);
 
