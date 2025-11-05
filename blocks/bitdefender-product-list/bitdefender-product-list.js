@@ -87,8 +87,21 @@ function createProductCard(product, isRecommended = false) {
   buyButton.className = 'product-buy-button';
   buyButton.href = product.trialUrl || '#';
   buyButton.textContent = 'Start Trial';
-  buyButton.target = '_top';
   buyButton.rel = 'noopener noreferrer';
+  
+  // Handle click to work in sandboxed iframes
+  buyButton.addEventListener('click', (e) => {
+    if (product.trialUrl) {
+      e.preventDefault();
+      // Try to open in new window (works with user activation in sandboxed iframes)
+      const opened = window.open(product.trialUrl, '_blank', 'noopener,noreferrer');
+      // Fallback: if popup blocked, navigate current window
+      if (!opened) {
+        window.location.href = product.trialUrl;
+      }
+    }
+  });
+  
   card.appendChild(buyButton);
 
   // Guarantee
