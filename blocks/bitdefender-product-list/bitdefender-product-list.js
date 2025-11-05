@@ -138,7 +138,7 @@ function createCarouselArrows(container, block) {
 
   // Update arrow states based on scroll position
   const updateArrows = () => {
-    const scrollLeft = container.scrollLeft;
+    const { scrollLeft } = container;
     const maxScroll = container.scrollWidth - container.clientWidth;
 
     leftArrow.classList.toggle('disabled', scrollLeft <= 0);
@@ -201,8 +201,8 @@ export default async function decorate(block, onDataLoaded) {
     block.textContent = '';
 
     // Create a new container for all products
-    const container = document.createElement('div');
-    container.className = 'products-container';
+    const productsContainer = document.createElement('div');
+    productsContainer.className = 'products-container';
 
     // Get all products matching the productIds
     if (data && data.productIds && Array.isArray(data.productIds)) {
@@ -215,14 +215,14 @@ export default async function decorate(block, onDataLoaded) {
 
           // Create and append the product card
           const card = createProductCard(prod, isRecommended);
-          container.appendChild(card);
+          productsContainer.appendChild(card);
         }
       });
     }
 
-    block.appendChild(container);
+    block.appendChild(productsContainer);
 
     // Add carousel arrows
-    createCarouselArrows(container, block);
+    createCarouselArrows(productsContainer, block);
   });
 }
