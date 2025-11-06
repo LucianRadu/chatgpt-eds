@@ -50,12 +50,24 @@ export class AEMEmbed extends HTMLElement {
             // Already available
             resolve(window.openai.toolOutput);
           } else {
-            // Wait for the event
-            window.addEventListener('openai:set_globals', () => {
-              // eslint-disable-next-line no-console
-              console.log('OpenAI tool output', window.openai.toolOutput);
-              resolve(window.openai.toolOutput);
-            }, { once: true });
+            // Wait for the event that includes toolOutput
+            const handleSetGlobals = (event) => {
+              // Check if toolOutput is in the event detail and is non-null
+              if (event.detail?.globals?.toolOutput) {
+                // eslint-disable-next-line no-console
+                console.log('OpenAI tool output from event', event.detail.globals.toolOutput);
+                resolve(event.detail.globals.toolOutput);
+                window.removeEventListener('openai:set_globals', handleSetGlobals);
+              } else if (window.openai?.toolOutput) {
+                // Fallback: check window.openai.toolOutput directly
+                // eslint-disable-next-line no-console
+                console.log('OpenAI tool output from window', window.openai.toolOutput);
+                resolve(window.openai.toolOutput);
+                window.removeEventListener('openai:set_globals', handleSetGlobals);
+              }
+            };
+            
+            window.addEventListener('openai:set_globals', handleSetGlobals);
           }
         });
 
