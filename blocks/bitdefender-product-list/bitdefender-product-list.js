@@ -87,7 +87,7 @@ function createProductCard(product, isRecommended = false) {
   buyButton.className = 'product-buy-button';
   buyButton.href = product.trialUrl || '#';
   buyButton.textContent = 'Start Trial';
-  
+
   // Use window.openai.openExternal for sandbox-safe navigation
   if (product.trialUrl) {
     buyButton.addEventListener('click', (e) => {
@@ -100,7 +100,7 @@ function createProductCard(product, isRecommended = false) {
       }
     });
   }
-  
+
   card.appendChild(buyButton);
 
   // Guarantee
