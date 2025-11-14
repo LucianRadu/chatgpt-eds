@@ -18,7 +18,7 @@ export const MOCK_PRODUCTS = [
     ],
     trialDays: 30,
     badge: 'ULTIMATE',
-    basePrice: 159,99,
+    basePrice: 159.99,
     price: {
       amount: 79.99,
       currency: 'USD',
