@@ -1,0 +1,396 @@
+/* Kawasaki Enduro Carousel Block */
+.kawasaki-enduro-carousel {
+  --kaw-green: #6bba3f;
+  --kaw-green-dark: #509a2e;
+  --kaw-black: #1a1a1a;
+  --kaw-gray: #2d2d2d;
+  --kaw-gray-light: #f4f4f4;
+  --kaw-radius: 12px;
+  --kaw-shadow: 0 4px 24px rgba(0 0 0 / 0.12);
+
+  box-sizing: border-box;
+  padding: 0;
+  font-family: var(--body-font-family, sans-serif);
+  color: var(--text-color, #131313);
+}
+
+.kawasaki-enduro-carousel *,
+.kawasaki-enduro-carousel *::before,
+.kawasaki-enduro-carousel *::after {
+  box-sizing: border-box;
+}
+
+/* Loading state */
+.kawasaki-enduro-carousel .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 300px;
+  color: var(--dark-color, #505050);
+}
+
+.kawasaki-enduro-carousel .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--kaw-gray-light);
+  border-top-color: var(--kaw-green);
+  border-radius: 50%;
+  animation: kaw-spin 0.8s linear infinite;
+}
+
+@keyframes kaw-spin {
+  to { transform: rotate(360deg); }
+}
+
+.kawasaki-enduro-carousel .error-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #c00;
+}
+
+/* Carousel wrapper */
+.kawasaki-enduro-carousel .carousel-wrapper {
+  width: 100%;
+}
+
+/* Header */
+.kawasaki-enduro-carousel .carousel-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.kawasaki-enduro-carousel .carousel-header h2 {
+  font-family: var(--heading-font-family, sans-serif);
+  font-size: var(--heading-font-size-l, 34px);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+  color: var(--kaw-black);
+}
+
+.kawasaki-enduro-carousel .header-subtitle {
+  margin: 4px 0 0;
+  font-size: var(--body-font-size-s, 16px);
+  color: var(--dark-color, #505050);
+}
+
+.kawasaki-enduro-carousel .carousel-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.kawasaki-enduro-carousel .nav-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--kaw-black);
+  border-radius: 50%;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--kaw-black);
+  padding: 0;
+}
+
+.kawasaki-enduro-carousel .nav-btn:hover {
+  background: var(--kaw-green);
+  border-color: var(--kaw-green);
+  color: #fff;
+}
+
+/* Track */
+.kawasaki-enduro-carousel .carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+
+.kawasaki-enduro-carousel .carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cards */
+.kawasaki-enduro-carousel .carousel-card {
+  flex: 0 0 calc(100% - 8px);
+  scroll-snap-align: start;
+  border-radius: var(--kaw-radius);
+  background: #fff;
+  box-shadow: var(--kaw-shadow);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.kawasaki-enduro-carousel .carousel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0 0 0 / 0.18);
+}
+
+/* Image */
+.kawasaki-enduro-carousel .card-image-wrap {
+  position: relative;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.kawasaki-enduro-carousel .card-image-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(0 0 0 / 0.03) 100%);
+  pointer-events: none;
+}
+
+.kawasaki-enduro-carousel .card-image-wrap img {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.kawasaki-enduro-carousel .carousel-card:hover .card-image-wrap img {
+  transform: scale(1.05);
+}
+
+/* Badge */
+.kawasaki-enduro-carousel .card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--kaw-green);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+/* Card body */
+.kawasaki-enduro-carousel .card-body {
+  padding: 20px;
+}
+
+.kawasaki-enduro-carousel .card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.kawasaki-enduro-carousel .card-title {
+  font-family: var(--heading-font-family, sans-serif);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--kaw-black);
+}
+
+.kawasaki-enduro-carousel .card-year {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--kaw-green);
+  background: rgba(107 186 63 / 0.1);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+/* Features */
+.kawasaki-enduro-carousel .card-features {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kawasaki-enduro-carousel .card-features li {
+  font-size: 13px;
+  color: var(--dark-color, #505050);
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.4;
+}
+
+.kawasaki-enduro-carousel .card-features li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  background: var(--kaw-green);
+  border-radius: 50%;
+}
+
+/* Actions */
+.kawasaki-enduro-carousel .card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.kawasaki-enduro-carousel .btn-details {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--kaw-green);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.kawasaki-enduro-carousel .btn-details:hover {
+  background: var(--kaw-green-dark);
+}
+
+.kawasaki-enduro-carousel .btn-compare {
+  padding: 10px 16px;
+  border: 2px solid var(--kaw-black);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--kaw-black);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kawasaki-enduro-carousel .btn-compare:hover {
+  background: var(--kaw-black);
+  color: #fff;
+}
+
+/* Dots */
+.kawasaki-enduro-carousel .carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.kawasaki-enduro-carousel .dot {
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 50%;
+  background: #d0d0d0;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+
+.kawasaki-enduro-carousel .dot.active {
+  background: var(--kaw-green);
+  width: 28px;
+  border-radius: 5px;
+}
+
+.kawasaki-enduro-carousel .dot:hover:not(.active) {
+  background: #999;
+}
+
+/* Responsive: 2 cards */
+@media (min-width: 600px) {
+  .kawasaki-enduro-carousel .carousel-card {
+    flex: 0 0 calc(50% - 12px);
+  }
+
+  .kawasaki-enduro-carousel .card-image-wrap {
+    min-height: 180px;
+  }
+}
+
+/* Responsive: 3 cards */
+@media (min-width: 900px) {
+  .kawasaki-enduro-carousel .carousel-card {
+    flex: 0 0 calc(33.333% - 12px);
+  }
+
+  .kawasaki-enduro-carousel .card-image-wrap {
+    min-height: 200px;
+    padding: 24px;
+  }
+
+  .kawasaki-enduro-carousel .card-title {
+    font-size: 22px;
+  }
+}
+
+/* Dark theme */
+.dark-theme .kawasaki-enduro-carousel,
+:root[data-theme='dark'] .kawasaki-enduro-carousel {
+  color: #e0e0e0;
+}
+
+.dark-theme .kawasaki-enduro-carousel .carousel-header h2,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .carousel-header h2 {
+  color: #fff;
+}
+
+.dark-theme .kawasaki-enduro-carousel .carousel-card,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .carousel-card {
+  background: var(--kaw-gray);
+  box-shadow: 0 4px 24px rgba(0 0 0 / 0.3);
+}
+
+.dark-theme .kawasaki-enduro-carousel .card-image-wrap,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .card-image-wrap {
+  background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+}
+
+.dark-theme .kawasaki-enduro-carousel .card-title,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .card-title {
+  color: #fff;
+}
+
+.dark-theme .kawasaki-enduro-carousel .card-features li,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .card-features li {
+  color: #bbb;
+}
+
+.dark-theme .kawasaki-enduro-carousel .nav-btn,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .nav-btn {
+  border-color: #fff;
+  color: #fff;
+}
+
+.dark-theme .kawasaki-enduro-carousel .btn-compare,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .btn-compare {
+  border-color: #fff;
+  color: #fff;
+}
+
+.dark-theme .kawasaki-enduro-carousel .btn-compare:hover,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .btn-compare:hover {
+  background: #fff;
+  color: var(--kaw-black);
+}
+
+.dark-theme .kawasaki-enduro-carousel .header-subtitle,
+:root[data-theme='dark'] .kawasaki-enduro-carousel .header-subtitle {
+  color: #aaa;
+}
