@@ -1,48 +1,27 @@
 /*
- * AEM Embed WebComponent — powered by LLMApps SDK
- *
- * Loads AEM EDS content into any MCP Apps host (ChatGPT, Claude, etc.)
- * and passes an MCPBridge instance to each block for tool data and interaction.
- *
- * Block contract:  export default function decorate(block, bridge) { ... }
- *   - bridge.toolResult              → Promise<params> (one-shot, first tool result)
- *   - bridge.callTool(name, args)    → call another MCP tool from the UI
- *   - bridge.sendMessage(text)       → post a follow-up message
- *   - bridge.updateModelContext(text) → silently update model context
- *   - bridge.openLink(url)           → open external link via host
- *   - bridge.requestDisplayMode(mode)→ request inline/fullscreen/pip
- *   - bridge.hostContext             → theme, locale, displayMode, styles, ...
- *   - bridge.hostCapabilities        → openLinks, serverTools, logging, ...
- *   - bridge.isEmbedded              → true if inside a host iframe
+ * AEM Embed WebComponent
+ * Include content from one Helix page in any other web surface.
+ * https://www.hlx.live/developer/block-collection/TBD
  */
-
-import { LLMApp } from './llmapps-sdk.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export class AEMEmbed extends HTMLElement {
   constructor() {
     super();
 
+    // Attaches a shadow DOM tree to the element
+    // With mode open the shadow root elements are accessible from JavaScript outside the root
     this.attachShadow({ mode: 'open' });
+
+    // Keep track if we have rendered the fragment yet.
     this.initialized = false;
 
     window.hlx = window.hlx || {};
     window.hlx.suppressLoadPage = true;
     [window.hlx.codeBasePath] = new URL(import.meta.url).pathname.split('/scripts/');
-
-    // Create the bridge instance — shared by all blocks in this embed
-    this._bridge = new LLMApp({
-      appInfo: { name: 'AEMEmbed', version: '1.0.0' },
-      appCapabilities: {
-        availableDisplayModes: ['inline', 'fullscreen'],
-      },
-    });
   }
 
-  // ---------------------------------------------------------------
-  // Block loading — passes the bridge to block decorate()
-  // ---------------------------------------------------------------
-
+  // eslint-disable-next-line class-methods-use-this
   async loadBlock(body, block, blockName, origin) {
     const blockCss = `${origin}${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.css`;
     if (!body.querySelector(`link[href="${blockCss}"]`)) {
@@ -65,18 +44,51 @@ export class AEMEmbed extends HTMLElement {
       // eslint-disable-next-line no-await-in-loop
       const decorateBlock = await import(blockScriptUrl);
       if (decorateBlock.default) {
+        // Create callback for when data loads
+        const onDataLoaded = new Promise((resolve) => {
+          if (window.openai?.toolOutput) {
+            // Already available
+            resolve(window.openai.toolOutput);
+          } else {
+            // Wait for the event
+            window.addEventListener('openai:set_globals', () => {
+              // eslint-disable-next-line no-console
+              console.log('OpenAI tool output', window.openai.toolOutput);
+              resolve(window.openai.toolOutput);
+            }, { once: true });
+          }
+        });
+
+        // Create callback for theme changes
+        const onThemeChanged = (callback) => {
+          // Check for theme query parameter for testing (e.g., ?theme=dark)
+          const urlParams = new URLSearchParams(window.location.search);
+          const themeParam = urlParams.get('theme');
+
+          // Call immediately with current theme
+          // Priority: query param > window.openai.theme > default 'light'
+          const currentTheme = themeParam || window.openai?.theme || 'light';
+          callback(currentTheme);
+
+          // Listen for theme changes (only if not using query param override)
+          if (!themeParam) {
+            window.addEventListener('openai:set_globals', (event) => {
+              if (event.detail?.globals?.theme) {
+                callback(event.detail.globals.theme);
+              }
+            });
+          }
+        };
+
+        // Call decorate immediately with the callbacks
         // eslint-disable-next-line no-await-in-loop
-        await decorateBlock.default(block, this._bridge);
+        await decorateBlock.default(block, onDataLoaded, onThemeChanged);
       }
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.log('[AEM Embed] Error loading block:', blockName, e);
+      console.log('An error occured while loading the content');
     }
   }
-
-  // ---------------------------------------------------------------
-  // Content handlers
-  // ---------------------------------------------------------------
 
   async handleHeader(htmlText, body, origin) {
     await this.pseudoDecorateMain(htmlText, body, origin);
@@ -97,6 +109,7 @@ export class AEMEmbed extends HTMLElement {
     await this.loadBlock(body, block, 'header', origin);
 
     block.dataset.blockStatus = 'loaded';
+
     body.style.height = 'var(--nav-height)';
     body.classList.add('appear');
   }
@@ -133,11 +146,16 @@ export class AEMEmbed extends HTMLElement {
       await decorateMain(main, true);
     }
 
+    // Query all the blocks in the aem content
+    // The blocks are in the first div inside the main tag
     const blockElements = main.querySelectorAll('.block');
 
+    // Did we find any blocks or all default content?
     if (blockElements.length > 0) {
+      // Get the block names
       const blocks = Array.from(blockElements).map((block) => block.classList.item(0));
 
+      // For each block in the embed load it's js/css
       for (let i = 0; i < blockElements.length; i += 1) {
         const blockName = blocks[i];
         const block = blockElements[i];
@@ -158,10 +176,11 @@ export class AEMEmbed extends HTMLElement {
     body.classList.add('appear');
   }
 
-  // ---------------------------------------------------------------
-  // Web Component lifecycle
-  // ---------------------------------------------------------------
-
+  /**
+   * Invoked each time the custom element is appended into a document-connected element.
+   * This will happen each time the node is moved, and may happen before the element's contents
+   * have been fully parsed.
+   */
   async connectedCallback() {
     if (!this.initialized) {
       try {
@@ -180,9 +199,6 @@ export class AEMEmbed extends HTMLElement {
         const plainUrl = url.endsWith('/') ? `${url}index.plain.html` : `${url}.plain.html`;
         const { href, origin } = new URL(plainUrl);
 
-        // Start bridge handshake in parallel with content fetch
-        const bridgeReady = this._bridge.connect();
-
         // Load fragment
         const resp = await fetch(href);
         if (!resp.ok) {
@@ -197,13 +213,12 @@ export class AEMEmbed extends HTMLElement {
         this.shadowRoot.appendChild(styles);
 
         let htmlText = await resp.text();
+        // Fix relative image urls
         const regex = /.\/media/g;
         htmlText = htmlText.replace(regex, `${origin}/media`);
 
+        // Set initialized to true so we don't run through this again
         this.initialized = true;
-
-        // Wait for bridge before loading blocks
-        await bridgeReady;
 
         if (type === 'main') await this.handleMain(htmlText, body, origin);
         if (type === 'header') await this.handleHeader(htmlText, body, origin);
@@ -215,10 +230,16 @@ export class AEMEmbed extends HTMLElement {
         this.shadowRoot.appendChild(fonts);
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.log(err || '[AEM Embed] An error occured while loading the content');
+        console.log(err || 'An error occured while loading the content');
       }
     }
   }
+
+  /**
+   * Imports a script and appends to document body
+   * @param {*} url
+   * @returns
+   */
 
   // eslint-disable-next-line class-methods-use-this
   async importScript(url) {
@@ -229,6 +250,7 @@ export class AEMEmbed extends HTMLElement {
       script.type = 'module';
       script.onload = resolve;
       script.onerror = reject;
+
       document.body.appendChild(script);
     });
   }
