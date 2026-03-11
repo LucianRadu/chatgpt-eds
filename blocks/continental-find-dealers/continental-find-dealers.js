@@ -55,12 +55,29 @@ function renderMap(container, dealers) {
     const group = L.featureGroup(Object.values(markers));
     const bounds = group.getBounds().pad(0.15);
 
+    const settle = () => {
+      map.invalidateSize();
+      map.fitBounds(bounds, { animate: false });
+    };
+
     map.whenReady(() => {
-      setTimeout(() => {
-        map.invalidateSize();
-        map.fitBounds(bounds, { animate: false });
-      }, 400);
+      setTimeout(settle, 600);
+      setTimeout(settle, 1500);
     });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      let settled = false;
+      const ro = new ResizeObserver(() => {
+        if (!settled) {
+          settle();
+          if (container.offsetWidth > 0 && container.offsetHeight > 0) {
+            settled = true;
+            ro.disconnect();
+          }
+        }
+      });
+      ro.observe(container);
+    }
 
     return { map, markers };
   });
