@@ -1,21 +1,36 @@
 const LEAFLET_CSS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
 const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
 
-function loadLeaflet() {
-  if (window.L) return Promise.resolve(window.L);
+function injectLeafletCSS(container) {
+  const root = container.getRootNode();
+  if (root.querySelector && root.querySelector('link[href*="leaflet"]')) return Promise.resolve();
+  if (root === document && document.querySelector('link[href*="leaflet"]')) return Promise.resolve();
 
-  return new Promise((resolve, reject) => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = LEAFLET_CSS;
-    document.head.appendChild(link);
+  return fetch(LEAFLET_CSS)
+    .then((r) => r.text())
+    .then((css) => {
+      const style = document.createElement('style');
+      style.textContent = css;
+      if (root instanceof ShadowRoot) {
+        root.prepend(style);
+      } else {
+        container.ownerDocument.head.appendChild(style);
+      }
+    });
+}
 
-    const script = document.createElement('script');
-    script.src = LEAFLET_JS;
-    script.onload = () => resolve(window.L);
-    script.onerror = () => reject(new Error('Failed to load Leaflet'));
-    document.head.appendChild(script);
-  });
+function loadLeaflet(container) {
+  const loadJS = window.L
+    ? Promise.resolve(window.L)
+    : new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = LEAFLET_JS;
+        script.onload = () => resolve(window.L);
+        script.onerror = () => reject(new Error('Failed to load Leaflet'));
+        document.head.appendChild(script);
+      });
+
+  return Promise.all([loadJS, injectLeafletCSS(container)]).then(([L]) => L);
 }
 
 function orangeMarkerIcon(L) {
@@ -29,14 +44,11 @@ function orangeMarkerIcon(L) {
 }
 
 function renderMap(container, dealers) {
-  return loadLeaflet().then((L) => {
-    const avgLat = dealers.reduce((s, d) => s + d.lat, 0) / dealers.length;
-    const avgLng = dealers.reduce((s, d) => s + d.lng, 0) / dealers.length;
-
+  return loadLeaflet(container).then((L) => {
     const map = L.map(container, {
       scrollWheelZoom: false,
       attributionControl: true,
-    }).setView([avgLat, avgLng], 11);
+    });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -54,30 +66,12 @@ function renderMap(container, dealers) {
 
     const group = L.featureGroup(Object.values(markers));
     const bounds = group.getBounds().pad(0.15);
+    map.fitBounds(bounds, { animate: false });
 
-    const settle = () => {
+    setTimeout(() => {
       map.invalidateSize();
       map.fitBounds(bounds, { animate: false });
-    };
-
-    map.whenReady(() => {
-      setTimeout(settle, 600);
-      setTimeout(settle, 1500);
-    });
-
-    if (typeof ResizeObserver !== 'undefined') {
-      let settled = false;
-      const ro = new ResizeObserver(() => {
-        if (!settled) {
-          settle();
-          if (container.offsetWidth > 0 && container.offsetHeight > 0) {
-            settled = true;
-            ro.disconnect();
-          }
-        }
-      });
-      ro.observe(container);
-    }
+    }, 300);
 
     return { map, markers };
   });
