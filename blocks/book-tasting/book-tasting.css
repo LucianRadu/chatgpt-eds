@@ -1,0 +1,380 @@
+/* Book Tasting Widget */
+
+main .book-tasting {
+  --color-background: #ffffff;
+  --color-text: #2c2c2c;
+  --color-text-secondary: #666666;
+  --color-border: #e0e0e0;
+  --color-primary: #8b4513;
+  --color-primary-hover: #6d3610;
+  --color-success: #4caf50;
+  --color-card-bg: #f9f9f9;
+  --color-selected: #8b4513;
+  --color-selected-bg: #f5ebe0;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  main .book-tasting {
+    --color-background: #1a1a1a;
+    --color-text: #e0e0e0;
+    --color-text-secondary: #a0a0a0;
+    --color-border: #333333;
+    --color-primary: #c17a3a;
+    --color-primary-hover: #d99456;
+    --color-card-bg: #242424;
+    --color-selected-bg: #2c2416;
+  }
+}
+
+main .book-tasting {
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding: var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header */
+main .book-tasting .booking-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+main .book-tasting .booking-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text);
+}
+
+main .book-tasting .booking-header p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Section labels */
+main .book-tasting .section-label {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text);
+}
+
+/* Experiences Grid */
+main .book-tasting .experiences-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+main .book-tasting .experiences-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+
+main .book-tasting .experience-card {
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+main .book-tasting .experience-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+main .book-tasting .experience-card.selected {
+  border-color: var(--color-selected);
+  background: var(--color-selected-bg);
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);
+}
+
+main .book-tasting .experience-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+main .book-tasting .experience-details {
+  padding: var(--spacing-md);
+}
+
+main .book-tasting .experience-details h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--color-text);
+}
+
+main .book-tasting .experience-details .description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  line-height: 1.4;
+}
+
+main .book-tasting .experience-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding-top: var(--spacing-xs);
+  border-top: 1px solid var(--color-border);
+}
+
+main .book-tasting .experience-meta .duration {
+  color: var(--color-text-secondary);
+}
+
+main .book-tasting .experience-meta .price {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Date and Time Section */
+main .book-tasting .datetime-section {
+  margin-bottom: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+main .book-tasting .form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+main .book-tasting .form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+}
+
+main .book-tasting .form-group input[type="date"],
+main .book-tasting .form-group input[type="text"],
+main .book-tasting .form-group input[type="email"],
+main .book-tasting .form-group input[type="tel"],
+main .book-tasting .form-group textarea {
+  width: 100%;
+  padding: var(--spacing-sm);
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-background);
+  color: var(--color-text);
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+
+main .book-tasting .form-group input:focus,
+main .book-tasting .form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+main .book-tasting .form-group textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Time Grid */
+main .book-tasting .time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+main .book-tasting .time-slot {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+main .book-tasting .time-slot:hover {
+  border-color: var(--color-primary);
+  background: var(--color-selected-bg);
+}
+
+main .book-tasting .time-slot.selected {
+  border-color: var(--color-selected);
+  background: var(--color-selected);
+  color: white;
+}
+
+/* Guests Section */
+main .book-tasting .guests-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+main .book-tasting .guests-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  max-width: 200px;
+}
+
+main .book-tasting .guests-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main .book-tasting .guests-btn:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+main .book-tasting .guests-control input[type="number"] {
+  width: 60px;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: var(--spacing-sm);
+}
+
+main .book-tasting .guests-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+/* Contact Section */
+main .book-tasting .contact-section {
+  margin-bottom: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+
+main .book-tasting .contact-section .form-group:nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+/* Submit Button */
+main .book-tasting .submit-booking-btn {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+main .book-tasting .submit-booking-btn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+main .book-tasting .submit-booking-btn:active {
+  transform: translateY(0);
+}
+
+/* Success Message */
+main .book-tasting .success-message {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+main .book-tasting .success-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--spacing-lg);
+  border-radius: 50%;
+  background: var(--color-success);
+  color: white;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: successPulse 0.6s ease-out;
+}
+
+main .book-tasting .success-message h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text);
+}
+
+main .book-tasting .success-message p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  main .book-tasting {
+    padding: var(--spacing-md);
+  }
+
+  main .book-tasting .booking-header h2 {
+    font-size: 1.5rem;
+  }
+
+  main .book-tasting .experiences-grid {
+    grid-template-columns: 1fr;
+  }
+
+  main .book-tasting .datetime-section,
+  main .book-tasting .contact-section {
+    grid-template-columns: 1fr;
+  }
+
+  main .book-tasting .time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
